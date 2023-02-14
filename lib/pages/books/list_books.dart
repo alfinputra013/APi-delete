@@ -1,7 +1,10 @@
 import 'package:crud_api/models/buku_model.dart';
 import 'package:crud_api/pages/books/details_book.dart';
+import 'package:crud_api/pages/books/form_add.dart';
 import 'package:crud_api/services/books_service.dart';
 import 'package:flutter/material.dart';
+
+import 'edit.dart';
 
 class ListBookPage extends StatefulWidget {
   const ListBookPage({super.key});
@@ -13,6 +16,8 @@ class ListBookPage extends StatefulWidget {
 class _ListBookPageState extends State<ListBookPage> {
   BukuModel? _bukuModel;
   bool isLoading = false;
+
+  get index => null;
   @override
   void initState() {
     super.initState();
@@ -36,6 +41,22 @@ class _ListBookPageState extends State<ListBookPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Belajar Flutter"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: IconButton(
+                onPressed: () {
+                  print("Tambah data buku");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FormBook(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.add)),
+          )
+        ],
       ),
       body: isLoading
           ? const Center(
@@ -67,38 +88,59 @@ class _ListBookPageState extends State<ListBookPage> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () => showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Hapus Data'),
-                              content: const Text(
-                                  'Yakin untuk menghapus data buku?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    print(
-                                        "cancel dihapus ${_bukuModel!.data![index].id}");
-                                    Navigator.pop(context, 'Cancel');
-                                  },
-                                  child: const Text('Cancel'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              onPressed: () => showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Hapus Data'),
+                                  content: const Text(
+                                      'Yakin untuk menghapus data buku?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        print(
+                                            "cancel dihapus ${_bukuModel!.data![index].id}");
+                                        Navigator.pop(context, 'Cancel');
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        await BookService().deleteBook(
+                                            _bukuModel!.data![index].id ?? 0);
+                                        Navigator.pop(context, 'OK');
+                                        print(
+                                            "id ini dihapus ${_bukuModel!.data![index].id}");
+                                        await getData();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
                                 ),
-                                TextButton(
-                                  onPressed: () async {
-                                    await BookService().deleteBook(
-                                        _bukuModel!.data![index].id ?? 0);
-                                    Navigator.pop(context, 'OK');
-                                    print(
-                                        "id ini dihapus ${_bukuModel!.data![index].id}");
-                                    await getData();
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
+                              ),
+                              icon: const Icon(Icons.delete, color: Colors.red),
                             ),
-                          ),
-                          icon: const Icon(Icons.delete),
-                        )
+                            IconButton(
+                              onPressed: () {
+                                print(
+                                    "id ini diedit ${_bukuModel!.data![index].id}");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EditBook(),
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

@@ -33,4 +33,35 @@ class BookService {
       return null;
     }
   }
+
+  Future createBook(Data data) async {
+    try {
+      var response =
+          await http.post(Uri.parse("${Global.BASE_API_URL}/create"));
+      print("Response ${response.statusCode}");
+      print("response ${response.body}");
+      var data = jsonDecode(response.body);
+      print("response ${data}");
+      return data;
+    } catch (e) {
+      print("error create book $e");
+      return null;
+    }
+  }
+
+  void editBook(Data data) {}
+}
+
+Future editBook(Data data) async {
+  try {
+    var response = await http.put(Uri.parse("${Global.BASE_API_URL}/update/"));
+    print("Response ${response.statusCode}");
+    print("response ${response.body}");
+    var data = jsonDecode(response.body);
+    print("response ${data}");
+    return data;
+  } catch (e) {
+    print("error edit book $e");
+    return null;
+  }
 }
